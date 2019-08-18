@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'select_screen.dart';
+import 'treatment.dart';
 
 void main() => runApp(MyApp());
 
@@ -45,30 +45,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-  double qualityScale = 2,
-      clinicianScale = 2,
-      patientScale = 2,
-      effectScale = 2,
-      pScale = 2;
-  String effectOrdinal = "Medium",
-      pOrdinal = "Statistically Significant (p < 0.05)",
-      clinicianOrdinal = "Fair",
-      patientOrdinal = "Fair";
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
+    String title = widget.title;
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
@@ -79,201 +59,40 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: Text(title),
       ),
       body: Align(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
         alignment: Alignment.topLeft,
-        child: Column(
-          // Column is also layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Text("Treatment Title",
-                  style: TextStyle(fontSize: 33, fontWeight: FontWeight.bold)),
-              SizedBox(width: 5, height: 20,),
-              Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.only(top: 10, bottom: 10), child:
-                    Text("Evidence", style: TextStyle(
-                        fontSize: 23, fontWeight: FontWeight.bold),),),
-                    Text("Quality", style: TextStyle(
-                        fontSize: 15, decoration: TextDecoration.underline)),
-                    Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        Slider(
-                          value: qualityScale,
-                          divisions: 4,
-                          onChanged: (double newVal) {
-                            setState(() {
-                              qualityScale = newVal;
-                            });
-                          },
-                          activeColor: Colors.cyan[100],
-                          min: 1,
-                          max: 5,
-                          label: "${qualityScale.toInt()}",),
-                        Text("${qualityScale.toInt()}"),
-                        IconButton(
-                          icon: Icon(Icons.info),
-                          onPressed: () {},
-                          iconSize: 30,)
-                      ],
-                    ),
-                    Text("Effect Size", style: TextStyle(
-                        fontSize: 15, decoration: TextDecoration.underline)),
-                    Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: <Widget>[
-                          Slider(
-                            value: effectScale,
-                            divisions: 2,
-                            onChanged: (double newVal) {
-                              setState(() {
-                                effectScale = newVal;
-                                switch (effectScale) {
-                                  case 1:
-                                    effectOrdinal = "Small";
-                                    break;
-                                  case 2:
-                                    effectOrdinal = "Medium";
-                                    break;
-                                  case 3:
-                                    effectOrdinal = "Large";
-                                    break;
-                                }
-                              });
-                            },
-                            activeColor: Colors.cyan[100],
-                            min: 1,
-                            max: 3,
-                            label: effectOrdinal,),
-                          Text(effectOrdinal),
-
-                        ]
-                    ),
-                    Text("p Value", style: TextStyle(
-                        fontSize: 15, decoration: TextDecoration.underline),),
-                    Column(mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Slider(
-                            value: pScale,
-                            divisions: 2,
-                            onChanged: (double newVal) {
-                              setState(() {
-                                pScale = newVal;
-                                switch (pScale) {
-                                  case 1:
-                                    pOrdinal =
-                                    "Not Very Significant (p > 0.05)";
-                                    break;
-                                  case 2:
-                                    pOrdinal =
-                                    "Statistically Significant (p < 0.05)";
-                                    break;
-                                  case 3:
-                                    pOrdinal =
-                                    "Very Statistically Significant (p < 0.01)";
-                                    break;
-                                }
-                              });
-                            },
-                            activeColor: Colors.cyan[100],
-                            min: 1,
-                            max: 3,
-                            label: pOrdinal,),
-                          Text(pOrdinal, softWrap: true,),
-                        ]),
-                    SizedBox(width: 4, height: 50,),
-                    Text("Clinician Values", style: TextStyle(
-                        fontSize: 23, fontWeight: FontWeight.bold),),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        Slider(
-                          value: clinicianScale,
-                          divisions: 2,
-                          onChanged: (double newVal) {
-                            setState(() {
-                              clinicianScale = newVal;
-                              switch (clinicianScale) {
-                                case 1:
-                                  clinicianOrdinal = "Poor";
-                                  break;
-                                case 2:
-                                  clinicianOrdinal = "Fair";
-                                  break;
-                                case 3:
-                                  clinicianOrdinal = "Good";
-                                  break;
-                              }
-                            });
-                          },
-                          activeColor: Colors.cyan[100],
-                          min: 1,
-                          max: 3,
-                          label: clinicianOrdinal,),
-                        Text(clinicianOrdinal),
-                      ],
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 10, bottom: 10), child:
-                    Text("Patient Values", style: TextStyle(
-                        fontSize: 23, fontWeight: FontWeight.bold),),),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        Slider(
-                          value: patientScale,
-                          divisions: 2,
-                          onChanged: (double newVal) {
-                            setState(() {
-                              patientScale = newVal;
-                              switch (patientScale) {
-                                case 1:
-                                  patientOrdinal = "Poor";
-                                  break;
-                                case 2:
-                                  patientOrdinal = "Fair";
-                                  break;
-                                case 3:
-                                  patientOrdinal = "Good";
-                                  break;
-                              }
-                            });
-                          },
-                          activeColor: Colors.cyan[100],
-                          min: 1,
-                          max: 3,
-                          label: patientOrdinal,),
-                        Text(patientOrdinal),
-                      ],
-                    ),
-                  ]
-              )
-            ]
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+        child: Column(children: <Widget>[
+          Padding(padding: EdgeInsets.all(10), child:
+          Text("Select the treatments to review below", textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold))),
+          Expanded(child:
+            GridView.count(crossAxisCount: 4, children: List.generate(100, (index) {
+              return Center(
+                child: Card(child: InkWell(splashColor: Colors.blue, onTap: () {print('Card Tapped');
+                },
+                child: Container(width: 400, height: 400, child: Column(children: <Widget>[
+                  Checkbox(value: false, onChanged: null),
+                  Text("Tap me, I am number $index")]
+                )
+                )
+                ),
+                ),
+              );
+          }),)),
+          FloatingActionButton(
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(
+                  builder: (BuildContext builder) => MyTreatment(title: title)));
+            },
+            tooltip: 'Go to next page',
+            child: Icon(Icons.arrow_forward),
+          ),
+          ])
+    )
     );
   }
 }
-
