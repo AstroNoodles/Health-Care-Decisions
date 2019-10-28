@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:spider_chart/spider_chart.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/cupertino.dart';
 
 class MyTreatment extends StatefulWidget {
   MyTreatment({Key key, this.title}) : super(key: key);
@@ -21,249 +22,317 @@ class MyTreatment extends StatefulWidget {
 }
 
 class _MyTreatmentState extends State<MyTreatment> {
-  int _counter = 0;
-  double qualityScale = 2,
-      clinicianScale = 2,
+  double validityScale = 2,
       patientScale = 2,
+      externalScale = 2,
       effectScale = 2,
       pScale = 2;
   String effectOrdinal = "Medium",
-      pOrdinal = "Statistically Significant (p < 0.05)",
-      clinicianOrdinal = "Fair",
-      patientOrdinal = "Fair";
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
+      pOrdinal = "(p < 0.05)",
+      patientValues = "Neutral",
+      externalValidity = "Neutral",
+      internalLabel = "Medium Risk";
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
+      appBar: AppBar(title: Text(widget.title), actions: <Widget>[
+        IconButton(
+            icon: Icon(Icons.assistant), onPressed: () => _showDialog(context))
+      ]),
       body: Align(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        alignment: Alignment.topLeft,
-        child: Row(
-          // Column is also layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
+          alignment: Alignment.topLeft,
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              Column(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
-              Text("Treatment Title",
-              style: TextStyle(fontSize: 33, fontWeight: FontWeight.bold), textAlign: TextAlign.center,),
-            SizedBox(width: 5, height: 20,),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.only(top: 10, bottom: 10), child:
-                Text("Evidence", style: TextStyle(
-                    fontSize: 23, fontWeight: FontWeight.bold),),),
-                Text("Quality", style: TextStyle(
-                    fontSize: 15, decoration: TextDecoration.underline)),
-                Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Slider(
-                      value: qualityScale,
-                      divisions: 4,
-                      onChanged: (double newVal) {
-                        setState(() {
-                          qualityScale = newVal;
-                        });
-                      },
-                      activeColor: Colors.cyan[100],
-                      min: 1,
-                      max: 5,
-                      label: "${qualityScale.toInt()}",),
-                    Text("${qualityScale.toInt()}"),
-                    IconButton(
-                      icon: Icon(Icons.info),
-                      onPressed: () => _showDialog(context),
-                      iconSize: 30,)
-                  ],
-                ),
-                Text("Effect Size", style: TextStyle(
-                    fontSize: 15, decoration: TextDecoration.underline)),
-                Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      Slider(
-                        value: effectScale,
-                        divisions: 2,
-                        onChanged: (double newVal) {
-                          setState(() {
-                            effectScale = newVal;
-                            switch (effectScale.round()) {
-                              case 1:
-                                effectOrdinal = "Small";
-                                break;
-                              case 2:
-                                effectOrdinal = "Medium";
-                                break;
-                              case 3:
-                                effectOrdinal = "Large";
-                                break;
-                            }
-                          });
-                        },
-                        activeColor: Colors.cyan[100],
-                        min: 0,
-                        max: 5,
-                        label: effectOrdinal,),
-                      Text(effectOrdinal),
-
-                    ]
-                ),
-                Text("p Value", style: TextStyle(
-                    fontSize: 15, decoration: TextDecoration.underline),),
-                Column(mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Slider(
-                        value: pScale,
-                        divisions: 2,
-                        onChanged: (double newVal) {
-                          setState(() {
-                            pScale = newVal;
-                            switch (pScale.round()) {
-                              case 1:
-                                pOrdinal =
-                                "Not Very Significant (p > 0.05)";
-                                break;
-                              case 2:
-                                pOrdinal =
-                                "Statistically Significant (p < 0.05)";
-                                break;
-                              case 3:
-                                pOrdinal =
-                                "Very Statistically Significant (p < 0.01)";
-                                break;
-                            }
-                          });
-                        },
-                        activeColor: Colors.cyan[100],
-                        min: 0,
-                        max: 5,
-                        label: pOrdinal,),
-                      Text(pOrdinal, softWrap: true,),
-                    ]),
-                SizedBox(width: 4, height: 50,),
-                Text("Clinician Values", style: TextStyle(
-                    fontSize: 23, fontWeight: FontWeight.bold),),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    Slider(
-                      value: clinicianScale,
-                      divisions: 2,
-                      onChanged: (double newVal) {
-                        setState(() {
-                          clinicianScale = newVal;
-                          switch (clinicianScale.round()) {
-                            case 1:
-                              clinicianOrdinal = "Poor";
-                              break;
-                            case 2:
-                              clinicianOrdinal = "Fair";
-                              break;
-                            case 3:
-                              clinicianOrdinal = "Good";
-                              break;
-                          }
-                        });
-                      },
-                      activeColor: Colors.cyan[100],
-                      min: 0,
-                      max: 5,
-                      label: clinicianOrdinal,),
-                    Text(clinicianOrdinal),
-                  ],
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: 10, bottom: 10), child:
-                Text("Patient Values", style: TextStyle(
-                    fontSize: 23, fontWeight: FontWeight.bold),),),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    Slider(
-                      value: patientScale,
-                      divisions: 2,
-                      onChanged: (double newVal) {
-                        setState(() {
-                          patientScale = newVal;
-                          switch (patientScale.round()) {
-                            case 1:
-                              patientOrdinal = "Poor";
-                              break;
-                            case 2:
-                              patientOrdinal = "Fair";
-                              break;
-                            case 3:
-                              patientOrdinal = "Good";
-                              break;
-                          }
-                        });
-                      },
-                      activeColor: Colors.cyan[100],
-                      min: 0,
-                      max: 5,
-                      label: patientOrdinal,),
-                    Text(patientOrdinal),
-                  ],
-                ),
-              ]
-          ),
-              Column(mainAxisAlignment: MainAxisAlignment.spaceAround, children: <Widget>[
-                SpiderChart(size: Size(100, 200), data: [qualityScale, effectScale, pScale, clinicianScale, patientScale],
-                    colors: [Colors.red, Colors.blue, Colors.green, Colors.orange, Colors.purple], maxValue: 5)
-              ],)
-        ]
-
-        )
-        ],
-
-      )
-      ),
-       // This trailing comma makes auto-formatting nicer for build methods.
+                    Text(
+                      "Treatment Title",
+                      style:
+                          TextStyle(fontSize: 33, fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(
+                      width: 5,
+                      height: 20,
+                    ),
+                    Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Padding(
+                            padding: EdgeInsets.only(top: 10, bottom: 10),
+                            child: Text(
+                              "Evidence",
+                              style: TextStyle(
+                                  fontSize: 23, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          Text("Internal Validity",
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  decoration: TextDecoration.underline)),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              Slider(
+                                value: validityScale,
+                                divisions: 3,
+                                onChanged: (double newVal) {
+                                  setState(() {
+                                    validityScale = newVal;
+                                    switch (validityScale.round()) {
+                                      case 0:
+                                        internalLabel = "None";
+                                        break;
+                                      case 1:
+                                        internalLabel = "Low Risk";
+                                        break;
+                                      case 2:
+                                        internalLabel = "Medium Risk";
+                                        break;
+                                      case 3:
+                                        internalLabel = "High Risk";
+                                        break;
+                                    }
+                                  });
+                                },
+                                activeColor: Colors.cyan[100],
+                                min: 0,
+                                max: 3,
+                                label: internalLabel,
+                              ),
+                              Text("${validityScale.toInt()}"),
+                            ],
+                          ),
+                          Text("Effect Size",
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  decoration: TextDecoration.underline)),
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                Slider(
+                                  value: effectScale,
+                                  divisions: 3,
+                                  onChanged: (double newVal) {
+                                    setState(() {
+                                      effectScale = newVal;
+                                      switch (effectScale.round()) {
+                                        case 0:
+                                          effectOrdinal = "None";
+                                          break;
+                                        case 1:
+                                          effectOrdinal = "Small";
+                                          break;
+                                        case 2:
+                                          effectOrdinal = "Medium";
+                                          break;
+                                        case 3:
+                                          effectOrdinal = "Large";
+                                          break;
+                                      }
+                                    });
+                                  },
+                                  activeColor: Colors.cyan[100],
+                                  min: 0,
+                                  max: 3,
+                                  label: effectOrdinal,
+                                ),
+                                Text(effectOrdinal),
+                              ]),
+                          Text(
+                            "p Value",
+                            style: TextStyle(
+                                fontSize: 15,
+                                decoration: TextDecoration.underline),
+                          ),
+                          Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Slider(
+                                  value: pScale,
+                                  divisions: 3,
+                                  onChanged: (double newVal) {
+                                    setState(() {
+                                      pScale = newVal;
+                                      switch (pScale.round()) {
+                                        case 0:
+                                          pOrdinal = "N/A";
+                                          break;
+                                        case 1:
+                                          pOrdinal = "(p > 0.05)";
+                                          break;
+                                        case 2:
+                                          pOrdinal = "(p < 0.05)";
+                                          break;
+                                        case 3:
+                                          pOrdinal = "(p < 0.01)";
+                                          break;
+                                      }
+                                    });
+                                  },
+                                  activeColor: Colors.cyan[100],
+                                  min: 0,
+                                  max: 3,
+                                  label: pOrdinal,
+                                ),
+                                Text(pOrdinal),
+                              ]),
+                          SizedBox(
+                            width: 4,
+                            height: 10,
+                          ),
+                          Text(
+                            "Patient Values",
+                            style: TextStyle(
+                                fontSize: 23, fontWeight: FontWeight.bold),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              Slider(
+                                value: patientScale,
+                                divisions: 3,
+                                onChanged: (double newVal) {
+                                  setState(() {
+                                    patientScale = newVal;
+                                    switch (patientScale.round()) {
+                                      case 0:
+                                        patientValues = "None";
+                                        break;
+                                      case 1:
+                                        patientValues = "Negative";
+                                        break;
+                                      case 2:
+                                        patientValues = "Neutral";
+                                        break;
+                                      case 3:
+                                        patientValues = "Positive";
+                                        break;
+                                    }
+                                  });
+                                },
+                                activeColor: Colors.cyan[100],
+                                min: 0,
+                                max: 3,
+                                label: patientValues,
+                              ),
+                              Text(patientValues),
+                            ],
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(top: 10, bottom: 10),
+                            child: Text(
+                              "External Validity",
+                              style: TextStyle(
+                                  fontSize: 23, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              Slider(
+                                value: externalScale,
+                                divisions: 3,
+                                onChanged: (double newVal) {
+                                  setState(() {
+                                    externalScale = newVal;
+                                    switch (externalScale.round()) {
+                                      case 0:
+                                        externalValidity = "None";
+                                        break;
+                                      case 1:
+                                        externalValidity = "Low";
+                                        break;
+                                      case 2:
+                                        externalValidity = "Neutral";
+                                        break;
+                                      case 3:
+                                        externalValidity = "High";
+                                        break;
+                                    }
+                                  });
+                                },
+                                activeColor: Colors.cyan[100],
+                                min: 0,
+                                max: 3,
+                                label: externalValidity,
+                              ),
+                              Text(externalValidity),
+                            ],
+                          ),
+                        ]),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        ButtonTheme(
+                            textTheme: ButtonTextTheme.normal,
+                            buttonColor: Colors.lightBlueAccent,
+                            focusColor: Colors.blueAccent,
+                            child: FlatButton(
+                                onPressed: () => _saveData(),
+                                child: Text(
+                                  "Save",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20),
+                                ))),
+                        Padding(padding: EdgeInsets.only(right: 100)),
+                        SpiderChart(
+                            size: Size(100, 200),
+                            data: [
+                              validityScale,
+                              effectScale,
+                              pScale,
+                              patientScale,
+                              externalScale
+                            ],
+                            colors: [
+                              Colors.red,
+                              Colors.blue,
+                              Colors.green,
+                              Colors.orange,
+                              Colors.purple
+                            ],
+                            maxValue: 3)
+                      ],
+                    )
+                  ])
+            ],
+          )),
+      // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 
-  _showDialog(BuildContext ctx){
-    return showDialog(context: ctx, builder: (BuildContext context) {
-      return AlertDialog(title: Text("Quality of a Study"),
-        content: Text("The quality of a study is defined by its validity, ability to be repeated and the amount of errors."),
-      actions: <Widget>[
-        FlatButton(onPressed: () => Navigator.of(context).pop(), child: Text("Close"))
-      ],);
-    });
+  buildPortraitOrientation() {}
+
+  _showDialog(BuildContext ctx) {
+    return showDialog(
+        context: ctx,
+        builder: (BuildContext context) {
+          return CupertinoAlertDialog(
+            title: Text("Quality of a Study"),
+            content: Text(
+                "The quality of a study is defined by its validity, ability to be repeated and the amount of errors."),
+            actions: <Widget>[
+              FlatButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text("Close"))
+            ],
+          );
+        });
+  }
+
+  _saveData() async {
+    var prefs = await SharedPreferences.getInstance();
+    prefs
+      ..setDouble("internalValidity", validityScale)
+      ..setDouble("patientScale", patientScale)
+      ..setDouble("effectSize", effectScale)
+      ..setDouble("pValue", pScale)
+      ..setDouble("externalScale", externalScale);
   }
 }
